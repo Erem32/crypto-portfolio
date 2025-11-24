@@ -1,0 +1,12 @@
+# frontend
+crypto-trading/node_modules
+crypto-trading/dist
+
+# backend
+crypto-trading-backend/.venv
+crypto-trading-backend/__pycache__
+crypto-trading-backend/*.sqlite3
+
+# general
+.env
+.env.*
