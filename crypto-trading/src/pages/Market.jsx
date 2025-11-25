@@ -12,7 +12,7 @@ function MarketPage() {
   const [selectedCoin, setSelectedCoin] = useState(null);
   const [isBuyOpen, setIsBuyOpen] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
 
   const cash = user?.cash_usd ?? 0;
 
@@ -30,9 +30,10 @@ function MarketPage() {
     setIsBuyOpen(true);
   };
 
-  function handleClose() {
+  async function handleClose() {
     setIsBuyOpen(false);
     setSelectedCoin(null);
+    await refreshUser();
   }
 
   function handleConfirm() {

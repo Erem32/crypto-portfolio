@@ -10,7 +10,7 @@ import { useSettings } from "../../context/SettingsContext";
 import { sellCoin } from "../../api/apiOrders";
 
 function Portfolio() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const { hideSmallPositions, showPortfolioSummary } = useSettings();
 
   const [isSellOpen, setIsSellOpen] = useState(false);
@@ -40,6 +40,7 @@ function Portfolio() {
   async function handleConfirm({ qty, symbol }) {
     try {
       await sellCoin({ symbol, quantity: qty });
+      await refreshUser();
       window.location.reload();
     } catch (err) {
       console.error("Failed to sell:", err);
@@ -54,7 +55,6 @@ function Portfolio() {
     throw new Error(error.message);
   }
 
-  // Apply "hide small positions" setting – uses currentValue from hook
   const visibleHoldings = hideSmallPositions
     ? holdings.filter((h) => (h.currentValue ?? 0) >= 10)
     : holdings;
@@ -71,7 +71,6 @@ function Portfolio() {
     );
   }
 
-  // Calculate summary for the optional "portfolio summary" line
   let summaryText = "";
   if (showPortfolioSummary && holdingsValue > 0) {
     const largest = visibleHoldings.reduce((acc, h) => {
