@@ -10,7 +10,7 @@ export async function getRecentTransactions(limit = 10) {
       const data = await res.json();
       if (data?.detail) message = data.detail;
     } catch {
-      // ignore JSON errors
+      //
     }
 
     throw new Error(message);

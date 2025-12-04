@@ -2,7 +2,6 @@ import { formatChange24h, formatUSD } from "../../lib/format";
 import Sparkline from "../../ui/Sparkline";
 function HoldingsTableRow({ holding, onSell }) {
   const pct = holding.change24hPct;
-  console.log("HOLDING SPARKLINE", holding.symbol, holding.sparkline);
 
   const pctClass =
     pct > 0 ? "text-emerald-600" : pct < 0 ? "text-rose-600" : "text-zinc-600";
