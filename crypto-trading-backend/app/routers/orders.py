@@ -10,10 +10,7 @@ router = APIRouter(prefix="/orders", tags=["orders"])
 
 
 def get_cached_coin_per_symbol(symbol: str):
-    """
-    Look up a single coin from the cached market data by its symbol
-    (case-insensitive). Returns None if not found.
-    """
+
     coins = get_market_data()
     symbol_upper = symbol.upper()
 
@@ -29,11 +26,10 @@ def buy(
     db: Session = Depends(get_db),
     current_user: models.Users = Depends(get_current_user),
 ):
-    # 1) Basic validation
+
     if payload.quantity <= 0:
         raise HTTPException(status_code=400, detail="Quantity must be more than 0")
 
-    # 2) Get coin from cached market data
     coin = get_cached_coin_per_symbol(payload.symbol)
     if coin is None:
         raise HTTPException(
@@ -41,7 +37,6 @@ def buy(
             detail="Symbol not found in current market data",
         )
 
-    # 3) Resolve price field (supports priceUSD or price)
     unit_price = getattr(coin, "priceUSD", None)
     if unit_price is None:
         unit_price = getattr(coin, "price", None)
@@ -55,17 +50,14 @@ def buy(
     total_value = payload.quantity * unit_price
     symbol_upper = coin.symbol.upper()
 
-    # 4) 💰 Check cash and deduct
     if current_user.cash_usd < total_value:
         raise HTTPException(
             status_code=400,
             detail="Insufficient cash balance to complete this purchase",
         )
 
-    # deduct from user cash
     current_user.cash_usd -= total_value
 
-    # 5) Create immutable transaction record
     tx = models.Transaction(
         user_id=current_user.id,
         symbol=symbol_upper,
@@ -75,7 +67,6 @@ def buy(
         total_value_usd=total_value,
     )
 
-    # 6) Find existing holding for this user + symbol
     holding = (
         db.query(models.Holdings)
         .filter(
@@ -180,9 +171,7 @@ def list_transactions(
     current_user: models.Users = Depends(get_current_user),
     limit: int = Query(20, ge=1, le=100),
 ):
-    """
-    Return latest transactions for the current user (most recent first).
-    """
+
     q = (
         db.query(models.Transaction)
         .filter(models.Transaction.user_id == current_user.id)

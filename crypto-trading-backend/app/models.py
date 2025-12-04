@@ -51,6 +51,6 @@ class NetWorthSnapshot(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
-    date = Column(Date, nullable=False)  # one row per day per user
+    date = Column(Date, nullable=False)
     net_worth_usd = Column(Float, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
